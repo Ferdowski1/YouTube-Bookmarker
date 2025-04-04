@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "YT Bookmarks",
+  "version": "1.0.0",
+  "description": "Bookmark and name moments in YouTube videos",
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.youtube.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/watch*"],   
+      "js": ["content.js"],                        
+                            
+      "run_at": "document_start"                    
+    }
+  ],
+  "icons": {
+    "48": "icons/bookmark.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/bookmark.png"],
+      "matches": ["*://www.youtube.com/*"]
+    }
+  ]
+}
