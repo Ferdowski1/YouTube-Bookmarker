@@ -36,7 +36,7 @@
 
   // Render bookmarks panel
   function renderBookmarks(bookmarks, panel) {
-    panel.innerHTML = "<strong>Bookmarks</strong><br>";
+    panel.innerHTML = `<strong style="font-size: 18px; display: block; text-align: center;">Bookmarks</strong><br>`;
 
     // Add bookmark button
     const addBtn = document.createElement("button");
@@ -78,6 +78,11 @@
     if (bookmarks.length === 0) {
       const msg = document.createElement("em");
       msg.textContent = "No bookmarks yet";
+      msg.style.display = "block";           
+      msg.style.textAlign = "center";         
+      msg.style.fontSize = "14px";          
+      msg.style.marginTop = "8px";           
+      msg.style.color = "lightgray";    
       panel.appendChild(msg);
       return;
     }
@@ -85,20 +90,31 @@
     // Create div for each bookmark
     bookmarks.forEach((b, index) => {
       const item = document.createElement("div");
+      item.className = "bookmark-items";
       item.style.margin = "4px 0";
       item.style.display = "flex";
-      item.style.justifyContent = "space-between";
       item.style.alignItems = "center";
-      item.style.gap = "6px";
-
+      item.style.gap = "8px";
+      item.style.width = "100%";
+    
+      // Left section: label and rename
       const left = document.createElement("div");
+      left.className = "bookmark-description";
       left.style.display = "flex";
       left.style.alignItems = "center";
       left.style.gap = "6px";
-
+      left.style.flex = "1";
+      left.style.overflow = "hidden";
+    
       const label = document.createElement("span");
       label.textContent = b.label;
       label.style.cursor = "pointer";
+      label.style.fontSize = "14px";
+      label.style.whiteSpace = "nowrap";
+      label.style.overflow = "hidden";
+      label.style.textOverflow = "ellipsis";
+      label.style.flex = "1";
+    
       label.addEventListener("click", () => {
         const video = document.querySelector("video");
         if (video) {
@@ -106,24 +122,26 @@
           video.play();
         }
       });
-
-      // Rename bookmark
+    
+      // Rename icon
       const rename = document.createElement("span");
       rename.textContent = "✏️";
       rename.style.cursor = "pointer";
+      rename.style.flexShrink = "0";
       rename.title = "Rename bookmark";
-
+    
       rename.addEventListener("click", () => {
         const input = document.createElement("input");
         input.type = "text";
         input.value = b.label;
         input.style.width = "140px";
         input.style.fontSize = "13px";
-
-        // Stop youtube keybindings when typing
+        input.style.flex = "1";
+    
+        // Stop YouTube keyboard shortcuts
         input.addEventListener("keydown", (e) => e.stopPropagation());
         input.addEventListener("keyup", (e) => e.stopPropagation());
-
+    
         input.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             const newLabel = input.value.trim();
@@ -139,20 +157,18 @@
             }
           }
         });
-
+    
         left.replaceChild(input, label);
         input.focus();
       });
-
-      left.appendChild(label);
-      left.appendChild(rename);
-
-      // Delete
+    
+      // Delete icon
       const del = document.createElement("span");
       del.textContent = "❌";
       del.style.cursor = "pointer";
+      del.style.flexShrink = "0";
       del.title = "Delete bookmark";
-
+    
       del.addEventListener("click", () => {
         const storageKey = getStorageKey();
         chrome.storage.local.get([storageKey], (result) => {
@@ -163,12 +179,15 @@
           });
         });
       });
-
+    
+      left.appendChild(label);
+      left.appendChild(rename);
+    
       item.appendChild(left);
       item.appendChild(del);
       panel.appendChild(item);
     });
-  }
+  }    
 
   // Helper to get current storage key
   function getStorageKey() {
@@ -179,6 +198,7 @@
   // Main setup -----------------------------------------------------------------------------------
   function init() {
     const videoId = new URLSearchParams(window.location.search).get("v");
+    if(videoId == null) return;
     lastVideoId = videoId;
     const storageKey = getStorageKey();
 
@@ -227,6 +247,7 @@
     panel.style.color = "white";
     panel.style.padding = "10px";
     panel.style.borderRadius = "8px";
+    panel.style.border = "1px solid white"; 
     panel.style.zIndex = "9999";
     panel.style.maxWidth = "250px";
     panel.style.display = "none";
